@@ -1,4 +1,3 @@
 package io.moviesondemand.projects;
 
-public class Person {
-}
+public abstract class Person {}

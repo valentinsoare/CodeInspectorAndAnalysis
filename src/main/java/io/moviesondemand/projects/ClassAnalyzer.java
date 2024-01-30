@@ -1,7 +1,7 @@
 package io.moviesondemand.projects;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+
 public class ClassAnalyzer {
 
     private ClassAnalyzer() {}
@@ -16,6 +16,7 @@ public class ClassAnalyzer {
                 .setName(inputClass.getSimpleName())
                 .setJdk(isJdkClass(inputClass))
                 .setInheritedClassNames(Arrays.asList(getAllInheritedClassNames(inputClass)))
+                .setInterfacesImplemented(getAllImplementedInterfaces(inputClass, new ArrayList<>()))
                 .setType();
     }
 
@@ -27,19 +28,24 @@ public class ClassAnalyzer {
     private static String[] getAllInheritedClassNames(Class<?> inputClass) {
         String[] inheritedClasses = new String[] {};
 
-        if (inputClass.isInterface()) {
-            inheritedClasses = Arrays.stream(inputClass.getInterfaces())
-                    .map(Class::getSimpleName)
-                    .toArray(String[]::new);
-        } else {
-            Class<?> inheritedClass = inputClass.getSuperclass();
+        Class<?> inheritedClass = inputClass.getSuperclass();
 
-            if (inheritedClass != null) {
-                inheritedClasses = new String[] {inputClass.getSuperclass().getSimpleName()};
-            }
+        if (inheritedClass != null) {
+            inheritedClasses = new String[] {inputClass.getSuperclass().getSimpleName()};
         }
 
         return inheritedClasses;
     }
 
+    private static List<String> getAllImplementedInterfaces(Class<?> inputClass, List<String> allImplementedInterfaces) {
+        Class<?>[] inputInterfaces = inputClass.getInterfaces();
+
+        for (Class<?> currentInterface : inputInterfaces) {
+            allImplementedInterfaces.add(currentInterface.getSimpleName());
+
+            getAllImplementedInterfaces(currentInterface, allImplementedInterfaces);
+        }
+
+        return allImplementedInterfaces;
+    }
 }

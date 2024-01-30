@@ -18,10 +18,12 @@ public class PopupTypeInfo {
     private String name;
     private boolean isJdk;
     private List<String> inheritedClassNames;
+    private List<String> interfacesImplemented;
     private String type;
 
     public PopupTypeInfo() {
         this.name = "none";
+        this.interfacesImplemented = new ArrayList<>();
         this.inheritedClassNames = new ArrayList<>();
     }
 
@@ -60,6 +62,11 @@ public class PopupTypeInfo {
         return this;
     }
 
+    public PopupTypeInfo setInterfacesImplemented(List<String> interfacesImplemented) {
+        this.interfacesImplemented = interfacesImplemented;
+        return this;
+    }
+
     public PopupTypeInfo setType() {
         if (isPrimitive) {
             this.type = "Primitive";
@@ -74,12 +81,21 @@ public class PopupTypeInfo {
 
     @Override
     public String toString() {
-        StringBuilder createInformation = new StringBuilder("Information:\n");
+        StringBuilder bld = new StringBuilder("Information:\n")
+                .append(String.format("%sType: %s%n", " ".repeat(2), ((isJdk) ? "JDK" : "Custom")))
+                .append(String.format("%sName: %s%n", " ".repeat(2), name))
+                .append(String.format("%sType: %s%n", " ".repeat(2), type));
 
-        return createInformation.append(String.format("%sType: %s%n", " ".repeat(2), ((isJdk) ? "JDK" : "Custom")))
-                .append(String.format("%sName: %s%n", " ".repeat(2),name))
-                .append(String.format("%sType: %s%n", " ".repeat(2), type))
-                .append(String.format("%sInherits from: %s%n", " ".repeat(2), String.join(", ", inheritedClassNames)))
-                .toString();
+        if (!inheritedClassNames.isEmpty()) {
+            bld.append(String.format("%sInherits from: %s%n", " ".repeat(2),
+                    String.join(", ", inheritedClassNames)));
+        }
+
+        if (!interfacesImplemented.isEmpty()) {
+            bld.append(String.format("%sImplements: %s%n", " ".repeat(2),
+                    String.join(", ", interfacesImplemented)));
+        }
+
+        return bld.toString();
     }
 }
